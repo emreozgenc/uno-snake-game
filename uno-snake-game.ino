@@ -94,7 +94,7 @@ void renderSnake() {
   while(iter != NULL) {
     short x = iter->x;
     short y = iter->y;
-    screen.drawRect(x, y, x+1, y+1);
+    screen.drawRect(x, y, x+3, y+3);
     iter = iter->next;
   }
 }
@@ -110,16 +110,16 @@ void moveSnake() {
   
   switch(snakeDirection) {
     case D_RIGHT:
-      head->x += 1;
+      head->x += 4;
       break;
     case D_LEFT:
-      head->x -= 1;
+      head->x -= 4;
       break;
     case D_UP:
-      head->y -= 1;
+      head->y -= 4;
       break;
     case D_DOWN:
-      head->y += 1;
+      head->y += 4;
       break;
   }
 
@@ -173,8 +173,9 @@ void decideSnakeDirection() {
 void handleGame() {
   if(gameInit) {
     snake = addNode(0,0);
-    snake = addNode(2,0);
     snake = addNode(4,0);
+    snake = addNode(8,0);
+    snake = addNode(12,0);
     gameInit = false;
   }
   decideSnakeDirection();
@@ -199,6 +200,6 @@ void loop() {
       break;
   }
   screen.update();
-  delay(200);
+  delay(250);
 
 }
