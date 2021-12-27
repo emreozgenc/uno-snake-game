@@ -146,6 +146,30 @@ void moveSnake() {
   
 }
 
+void decideSnakeDirection() {
+  short x = analogRead(AXIS_X);
+  short y = analogRead(AXIS_Y);
+
+  if(x > TOP && snakeDirection != D_LEFT) {
+    snakeDirection = D_RIGHT;
+    return;
+  }
+
+  if(x < DOWN && snakeDirection != D_RIGHT) {
+    snakeDirection = D_LEFT;
+    return;
+  }
+
+  if(y > TOP && snakeDirection != D_UP) {
+    snakeDirection = D_DOWN;
+    return;
+  }
+
+  if(y < DOWN && snakeDirection != D_DOWN) {
+    snakeDirection = D_UP;
+    return;
+  }
+}
 void handleGame() {
   if(gameInit) {
     snake = addNode(0,0);
@@ -153,7 +177,7 @@ void handleGame() {
     snake = addNode(4,0);
     gameInit = false;
   }
-
+  decideSnakeDirection();
   moveSnake();
 }
 
