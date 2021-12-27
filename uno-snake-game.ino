@@ -7,13 +7,19 @@ const short AXIS_X = A0;
 const short AXIS_Y = A1;
 const short TOP = 700;
 const short DOWN = 300;
+const short D_UP = 0;
+const short D_DOWN = 1;
+const short D_LEFT = 2;
+const short D_RIGHT = 3;
+short snakeDirection = D_RIGHT;
 short programState = STATE_MENU;
 short difficultySelection = 0;
+bool gameInit = true;
 
 typedef struct n {
-  struct *n next;
-  int x;
-  int y;
+  struct n * next;
+  short x;
+  short y;
 }node;
 
 node *snake;
@@ -24,6 +30,26 @@ const String difficulties[] = {"Kolay", "Orta", "Zor"};
 extern uint8_t TinyFont[];
 extern uint8_t SmallFont[];
 // 84*48 pixels
+
+node * addNode(short x, short y) {
+  if(snake == NULL) {
+    snake = (node *)malloc(sizeof(node));
+    snake->next = NULL;
+    snake->x = x;
+    snake->y = y;
+    return snake;
+  }
+
+  node * iter = snake;
+  while(iter->next != NULL)
+    iter = iter->next;
+  node * temp = (node*)malloc(sizeof(node));
+  temp->x = x;
+  temp->y = y;
+  temp->next = NULL;
+  iter->next = temp;
+  return snake;
+}
 
 
 void setup() {
@@ -63,6 +89,79 @@ void renderMenu() {
   screen.drawRect(30, y, 54, y+8);
 }
 
+void renderSnake() {
+  node *iter = snake;
+  while(iter != NULL) {
+    short x = iter->x;
+    short y = iter->y;
+    screen.drawRect(x, y, x+1, y+1);
+    iter = iter->next;
+  }
+}
+
+void moveSnake() {
+  node * head;
+  node * iter = snake;
+
+  while(iter->next != NULL) {
+    iter = iter->next;
+  }
+  head = iter;
+  
+  switch(snakeDirection) {
+    case D_RIGHT:
+      head->x += 1;
+      break;
+    case D_LEFT:
+      head->x -= 1;
+      break;
+    case D_UP:
+      head->y -= 1;
+      break;
+    case D_DOWN:
+      head->y += 1;
+      break;
+  }
+
+  if(head->x > 84) {
+    head->x = 0;
+  }
+  if(head->y > 48) {
+    head->y = 0;
+  }
+  if(head->x < 0) {
+    head->x = 84;
+  }
+  if(head->y < 0) {
+    head->y = 48;
+  }
+  
+  
+  iter = snake;
+  while(iter->next != NULL) {
+    iter->x = iter->next->x;
+    iter->y = iter->next->y;
+    iter = iter->next;
+  }
+  
+}
+
+void handleGame() {
+  if(gameInit) {
+    snake = addNode(0,0);
+    snake = addNode(2,0);
+    snake = addNode(4,0);
+    gameInit = false;
+  }
+
+  moveSnake();
+}
+
+void renderGame() {
+  renderSnake();
+}
+
+
 void loop() {
   screen.clrScr();
   switch(programState){
@@ -71,6 +170,8 @@ void loop() {
       renderMenu();
       break;
     case STATE_GAME:
+      handleGame();
+      renderGame();
       break;
   }
   screen.update();
