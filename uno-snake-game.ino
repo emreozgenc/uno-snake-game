@@ -232,7 +232,8 @@ void checkFoodCollision() {
 }
 
 void renderFood() {
-  screen.drawRect(food.x, food.y, food.x + 3, food.y + 3);
+  screen.drawLine(food.x, food.y, food.x + 3, food.y + 3);
+  screen.drawLine(food.x + 3, food.y, food.x, food.y + 3);
 }
 
 void handleGame() {
