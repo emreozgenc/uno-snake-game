@@ -10,6 +10,14 @@ const short DOWN = 300;
 short programState = STATE_MENU;
 short difficultySelection = 0;
 
+typedef struct n {
+  struct *n next;
+  int x;
+  int y;
+}node;
+
+node *snake;
+
 const String startMessage = "YILAN OYUNU";
 const String difficulties[] = {"Kolay", "Orta", "Zor"};
 
@@ -22,7 +30,6 @@ void setup() {
   pinMode(SWITCH_PIN, INPUT_PULLUP);
   screen.InitLCD();
   Serial.begin(9600);
-
 }
 
 void handleMenu() {
