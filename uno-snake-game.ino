@@ -32,10 +32,14 @@ void handleMenu() {
 
   short stickValue = analogRead(AXIS_Y);
 
-  if(stickValue > TOP)
+  if(stickValue > TOP) {
     difficultySelection++;
-  else if(stickValue < DOWN)
+    return;
+  }
+  if(stickValue < DOWN) {
     difficultySelection--;
+    return;
+  }
   
 }
 
