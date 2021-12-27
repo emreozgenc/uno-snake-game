@@ -15,6 +15,7 @@ short snakeDirection = D_RIGHT;
 short programState = STATE_MENU;
 short difficultySelection = 0;
 bool gameInit = true;
+bool foodSpawned = false;
 
 typedef struct n {
   struct n * next;
@@ -23,6 +24,7 @@ typedef struct n {
 }node;
 
 node *snake;
+node food;
 
 const String startMessage = "YILAN OYUNU";
 const String difficulties[] = {"Kolay", "Orta", "Zor"};
@@ -99,14 +101,16 @@ void renderSnake() {
   }
 }
 
-void moveSnake() {
-  node * head;
+node * getSnakeHead() {
   node * iter = snake;
-
   while(iter->next != NULL) {
     iter = iter->next;
   }
-  head = iter;
+  return iter;
+}
+
+void moveSnake() {
+  node * head = getSnakeHead();
   
   switch(snakeDirection) {
     case D_RIGHT:
@@ -137,7 +141,7 @@ void moveSnake() {
   }
   
   
-  iter = snake;
+  node *iter = snake;
   while(iter->next != NULL) {
     iter->x = iter->next->x;
     iter->y = iter->next->y;
@@ -170,6 +174,67 @@ void decideSnakeDirection() {
     return;
   }
 }
+
+bool checkFoodSpawnLocation(short x, short y) {
+  node *iter = snake;
+  while(iter != NULL) {
+    if(iter->x == x && iter->y == y)
+      return false;
+
+    iter = iter->next;
+  }
+
+  if(x%4 != 0)
+    return false;
+  if(y%4 != 0)
+    return false;
+
+  return true;
+}
+
+void spawnFood() {
+  if(!foodSpawned) {
+    randomSeed(analogRead(A3));
+    short x = random(0, 80);
+    short y = random(0, 44);
+
+    while(!checkFoodSpawnLocation(x, y)) {
+      x = random(0, 80);
+      y = random(0, 44);
+    }
+
+    food.x = x;
+    food.y = y;
+    foodSpawned = true;
+  }
+}
+
+void checkFoodCollision() {
+  node * head = getSnakeHead();
+  if(food.x == head->x && food.y == head->y) {
+    foodSpawned = false;
+    moveSnake();
+    switch(snakeDirection) {
+      case D_LEFT:
+        snake = addNode(food.x - 4, food.y);
+        return;
+      case D_RIGHT:
+        snake = addNode(food.x + 4, food.y);
+        return;
+      case D_UP:
+        snake = addNode(food.x, food.y - 4);
+        return;
+      case D_DOWN:
+        snake = addNode(food.x, food.y + 4);
+        return;
+    }
+  }
+}
+
+void renderFood() {
+  screen.drawRect(food.x, food.y, food.x + 3, food.y + 3);
+}
+
 void handleGame() {
   if(gameInit) {
     snake = addNode(0,0);
@@ -180,10 +245,13 @@ void handleGame() {
   }
   decideSnakeDirection();
   moveSnake();
+  checkFoodCollision();
+  spawnFood();
 }
 
 void renderGame() {
   renderSnake();
+  renderFood();
 }
 
 
@@ -200,6 +268,6 @@ void loop() {
       break;
   }
   screen.update();
-  delay(250);
+  delay(150);
 
 }
