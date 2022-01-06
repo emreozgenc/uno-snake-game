@@ -231,6 +231,32 @@ void checkFoodCollision() {
   }
 }
 
+void clearSnake() {
+  node * iter = snake;
+
+  while(iter != NULL) {
+    node * temp = iter->next;
+    free(iter);
+    iter = temp;
+  }
+  snake = NULL;
+}
+
+void checkSnakeCollision() {
+  node * head = getSnakeHead();
+  node * iter = snake;
+
+  while(iter->next->next != NULL) {
+    if(iter->x == head->x && iter->y == head->y) {
+      programState = STATE_MENU;
+      clearSnake();
+      gameInit = true;
+      delay(300);
+    }
+    iter = iter->next;
+  }
+}
+
 void renderFood() {
   screen.drawLine(food.x, food.y, food.x + 3, food.y + 3);
   screen.drawLine(food.x + 3, food.y, food.x, food.y + 3);
@@ -246,6 +272,7 @@ void handleGame() {
   }
   decideSnakeDirection();
   moveSnake();
+  checkSnakeCollision();
   checkFoodCollision();
   spawnFood();
 }
