@@ -127,10 +127,10 @@ void moveSnake() {
       break;
   }
 
-  if(head->x > 84) {
+  if(head->x >= 84) {
     head->x = 0;
   }
-  if(head->y > 48) {
+  if(head->y >= 48) {
     head->y = 0;
   }
   if(head->x < 0) {
